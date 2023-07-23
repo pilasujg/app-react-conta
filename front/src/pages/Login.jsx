@@ -1,8 +1,25 @@
 import { useForm } from 'react-hook-form';
+import { useRegistro } from '../context/RegistroContext';
+import { useEffect } from 'react';
+import {useNavigate} from 'react-router-dom'
 
 
-export function Login() {
-  const {register} = useForm();
+export function Login() {  const {register, handleSubmit, formState: {errors}} = useForm();
+const { signIn, user, isAuth, errors: loginErrors} = useRegistro()
+
+const navigate = useNavigate()
+
+useEffect(() => {
+    if(isAuth){
+        navigate('/')
+    }
+}, [isAuth, navigate])
+
+//en haddle submit se llama a la funcion de registro que esta el context y se le pasa los valores del formulario para que los envie al backend
+    const onSubmit = handleSubmit(async (values) => {
+    await signIn(values)
+
+}) 
   return (
     <div>
     <div className="max-w-md mx-auto p-2 rounded-md justify-center items-center">
@@ -17,7 +34,7 @@ export function Login() {
         <img src="https://mdbootstrap.com/img/Photos/new-templates/bootstrap-login-form/draw2.png" alt="tarea" className="img-fluid"></img>
       </div>
       <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-        <form>
+        <form onSubmit={onSubmit} >
           
           <div className="form-outline mb-4">
             <div>
