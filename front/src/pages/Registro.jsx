@@ -1,7 +1,26 @@
-import { useForm } from 'react-hook-form';
+import  { useForm } from 'react-hook-form';
+import { useRegistro } from '../context/RegistroContext';
+import { useEffect } from 'react';
+import {useNavigate} from 'react-router-dom'
 
 export function Registro() {
-const {register} = useForm();
+   
+  const {register, handleSubmit, formState: {errors}} = useForm();
+  const {signUp, isAuth, errors: RegistroErrors} = useRegistro()
+ const navigate = useNavigate()
+
+
+
+  useEffect(() => {
+      if(isAuth) navigate('/');
+      
+  }, [isAuth, navigate])
+      
+
+  const onSubmit = handleSubmit(async (values) => {
+      await signUp(values)
+
+  })
 
   return (
     <div>
@@ -17,7 +36,12 @@ const {register} = useForm();
 
                 <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Registro</p>
 
-                <form className="mx-1 mx-md-4">
+          {
+              RegistroErrors.map((error,i) => (
+              <div className='text-red-500 text-xl italic'key={i} >{error}</div>
+              ))
+            }
+                <form className="mx-1 mx-md-4" onSubmit={onSubmit}>
                 <div>
                 <label className="px-4 form-label fs-5" htmlFor='name'>Tu Nombre</label>
                 </div>    
@@ -26,11 +50,12 @@ const {register} = useForm();
                     <div className="form-outline flex-fill mb-0">
                       <input 
                       type='text'
-                      {...register('name', {required: true})}
-                        id='name'
+                      {...register('nombre', {required: true})}
+                        id='nombre'
                       className='rounded-pill px-4 py-2 text-xl w-80'
                       />
-                      
+                      {errors.nombre && <span className='text-red-500 italic text-xl'>Usuario es obligatorio</span>}
+
                     </div>
                   </div>
                   <div>
@@ -41,11 +66,14 @@ const {register} = useForm();
                     <i className="fas fa-envelope fa-lg me-3 fa-fw"></i>
                     <div className="form-outline flex-fill mb-0">
                     <input
-                    type='text'
+                    type='email'
                       {...register('email', {required: true})}
                         id='email'
                      className='rounded-pill px-4 py-2 text-xl w-80'
                       />
+                       {
+                errors.email && <span className='text-red-500 text-xl italic'>Email es obligatorio</span>
+                      }
                     </div>
                   </div>
                   <div>
@@ -60,7 +88,9 @@ const {register} = useForm();
                       id='password'
                       className='rounded-pill px-4 py-2 text-xl w-80'
                       />
-                      
+                      {
+              errors.password && <span className='text-red-500 text-xl italic'>Password es obligatorio</span>
+                      }
                     </div>
                   </div>
 
